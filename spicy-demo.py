@@ -16,8 +16,8 @@ def addData(courseid):
     content=a.find_elements_by_class_name("item")
     for i in content:
         temp=i.text.split(" ")
-        for j in range(2,12):
-            row[j-2]+=int(temp[j])
+        for j in range(len(temp)-10,len(temp)):
+			row[j-len(temp)+10]+=int(temp[j])
     database[courseid]=row
 
 def normallize(person):
