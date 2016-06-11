@@ -15,17 +15,17 @@ add_ref.addEventListener("click",
       '" class="pure-u-1-8">班次：</label><input name="rclass_' + num +
       '" class="pure-u-1-8"/><label for="rgrade' + num +
       '" class="pure-u-1-8">成績： </label><select name="rgrade_' + num +
-      '" class="pure-u-1-8"><option value="A+">A+</option>' +
-      '<option value="A">A</option>' +
-      '<option value="A-">A-</option>' +
-      '<option value="B+">B+</option>' +
-      '<option value="B">B</option>' +
-      '<option value="B-">B-</option>' +
-      '<option value="C+">C+</option>' +
-      '<option value="C">C</option>' +
-      '<option value="C-">C-</option>' +
-      '<option value="F">F</option>' +
-      '<option value="X">X</option>' +
+      '" class="pure-u-1-8"><option value="9">A+</option>' +
+      '<option value="8">A</option>' +
+      '<option value="7">A-</option>' +
+      '<option value="6">B+</option>' +
+      '<option value="5">B</option>' +
+      '<option value="4">B-</option>' +
+      '<option value="3">C+</option>' +
+      '<option value="2">C</option>' +
+      '<option value="1">C-</option>' +
+      '<option value="0">F</option>' +
+      '<option value="0">X</option>' +
       '</select>' +
       '</div>');
   }
@@ -53,7 +53,7 @@ form.addEventListener("submit",
       if (form.elements['rid_' + i].value.trim())
         ref.push({
           "id": form.elements['rid_' + i].value,
-          "grade": form.elements['rgrade_' + i].value
+          "grade": form.elements['rgrade_' + i].value - 0
         });
 
     for (var i = 0; i < document.getElementsByClassName("course").length; ++i)

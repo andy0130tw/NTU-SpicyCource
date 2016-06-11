@@ -37,7 +37,8 @@ def query():
 
     data = [ {
         'c_name': cid,
-        'p_fail': flunkRate(cid, prAvg)
+        'prediction': spicy_core.lettergrade[spicy_core.predictCourseScore(cid,prAvg)]
+        # 'p_fail': flunkRate(cid, prAvg)
     } for cid in data['course'] ]
 
     return jsonify(data)
