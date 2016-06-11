@@ -1,0 +1,87 @@
+*,  .pure-g [class *= pure-u]
+{
+  text-align: center;
+  position: relative;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+body
+{
+  width: 100%;
+  margin: 0 auto;
+}
+h1
+{
+  margin: 0 0 1em 0;
+  text-align: center;
+  padding: 1em 2em;
+  background: #1f77b4;
+  color: #fff;
+}
+h2
+{
+  margin: 0;
+  text-align: center;
+  padding: 0.5em;
+}
+#input, #process, #output
+{
+  margin:  auto;
+  width: 66.67%;
+  min-width: 840px;
+}
+#input form
+{
+  margin: 0 1em;
+}
+#input #left
+{
+  padding-right: 4px;
+}
+#input #right
+{
+  padding-left: 4px;
+  border-left: #CCC solid 1px;
+}
+#input .ref, #input .course
+{
+  margin: 4px auto;
+}
+#input .pure-button
+{
+  display: block;
+  width: 100%;
+  margin: 4px auto;
+}
+#process, #output
+{
+  display: none;
+}
+#process
+{
+  text-align: center;
+  font-size: 5em;
+  padding: 0.5em;
+  color: #CCC;
+}
+#canvas
+{
+  width: 100%;
+  height: 480px;
+}
+
+.pass
+{
+  fill: #2ca02c;
+}
+
+.fail
+{
+  fill: #d62728;
+}
+.number
+{
+  fill: #fff;
+  stroke: none;
+}

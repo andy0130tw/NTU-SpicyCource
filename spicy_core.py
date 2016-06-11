@@ -1,15 +1,27 @@
+#/usr/bin/env python
 
 from selenium import webdriver
 from scipy.stats import norm
 import numpy
 
-a=webdriver.Firefox()
+a = None
+
 database = {}
-cid="70522200" #演算法課號
-rid="70522200"
-rgrade=2
-PR=0.78
 lettergrade={0:"F",1:"C-",2:"C",3:"C+",4:"B-",5:"B",6:"B+",7:"A-",8:"A",9:"A+",}
+
+
+def initBrowser():
+    global a
+    if a:
+        raise BaseException('Browser has been initialized before!')
+    a=webdriver.Firefox()
+
+def shutdownBrowser():
+    global a
+    if a:
+        a.quit()
+        a = None
+
 def addData(courseid):
     row=[0,0,0,0,0,0,0,0,0,0]
     a.get("http://ntusweety.herokuapp.com/history?&id="+courseid[0:3]+"+"+courseid[3:])
@@ -17,7 +29,7 @@ def addData(courseid):
     for i in content:
         temp=i.text.split(" ")
         for j in range(len(temp)-10,len(temp)):
-			row[j-len(temp)+10]+=int(temp[j])
+            row[j-len(temp)+10]+=int(temp[j])
     database[courseid]=row
 
 def normallize(person):
@@ -25,6 +37,8 @@ def normallize(person):
     PRRange=[0,0,0,0,0,0,0,0,0,0]
     for i in range(1,10):
         row[i]+=row[i-1]
+    # if row[9] == 0:
+    #     return
     for i in range(0,10):
         PRRange[i]=row[i]/row[9]
     return PRRange
@@ -48,12 +62,9 @@ def predictCourseScore(courseid,PR):
             grade=i
     return grade
 
-
-
 def flunkRate(courseid,PR):
     PRRange = normallize(database[courseid])
     return norm.cdf((PRRange[0]-PR)/numpy.std(PRRange,ddof=1))
-
 
 
 #def countrate(array):
@@ -66,10 +77,19 @@ def flunkRate(courseid,PR):
 #    for i in groupdata:
 
 
+if __name__ == '__main__':
+    database = {}
 
+    # mocked data for demostration
+    cid="70522200" #演算法課號
+    rid="70522200"
+    rgrade=2
+    PR=0.78
 
-print(lettergrade[predictCourseScore(cid,PR)])
-print('PR', findPRByHistory(rid,rgrade))
-print('Flunk rate', flunkRate(cid,PR))
+    initBrowser()
 
-a.quit()
+    print(lettergrade[predictCourseScore(cid,PR)])
+    print('PR', findPRByHistory(rid,rgrade))
+    print('Flunk rate', flunkRate(cid,PR))
+
+    shutdownBrowser()
