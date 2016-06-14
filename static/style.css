@@ -1,6 +1,5 @@
 *,  .pure-g [class *= pure-u]
 {
-  text-align: center;
   position: relative;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -25,15 +24,21 @@ h2
   text-align: center;
   padding: 0.5em;
 }
-#input, #process, #output
+#input, 
+#process,
+#output
 {
-  margin:  auto;
+  margin:  0 auto;
   width: 66.67%;
   min-width: 840px;
 }
 #input form
 {
   margin: 0 1em;
+}
+#input #instruction
+{
+  margin: 1em 0;
 }
 #input #left
 {
@@ -42,19 +47,32 @@ h2
 #input #right
 {
   padding-left: 4px;
-  border-left: #CCC solid 1px;
 }
-#input .ref, #input .course
+#input .ref,
+#input .course
 {
-  margin: 4px auto;
+  border-left: 8px #1f77b4 solid;
+  margin: 8px auto;
 }
-#input .pure-button
+#input label
+{
+  padding-right: 4px;
+  text-align: right;
+}
+#input .check
+{
+  padding: 0.5em 4px;
+  font-weight: bold;
+  text-align: left;
+}
+.pure-button
 {
   display: block;
   width: 100%;
   margin: 4px auto;
 }
-#process, #output
+#output,
+#process
 {
   display: none;
 }
@@ -65,23 +83,45 @@ h2
   padding: 0.5em;
   color: #CCC;
 }
+#result
+{
+  padding: 1em;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+/* Drawings */
 #canvas
 {
   width: 100%;
   height: 480px;
 }
-
-.pass
+.axis path,
+.axis line
 {
-  fill: #2ca02c;
+  fill: none;
+  stroke: #AAA;
 }
-
+.pass-a
+{
+  fill: SeaGreen ;
+}
+.pass-b
+{
+  fill: MediumSeaGreen;
+}
+.pass-c
+{
+  fill: DarkSeaGreen;
+}
 .fail
 {
-  fill: #d62728;
+  fill: DarkRed;
 }
-.number
+.grade
 {
-  fill: #fff;
+  fill: White;
   stroke: none;
+  text-anchor: middle;
+  font-size: 20px;
 }
