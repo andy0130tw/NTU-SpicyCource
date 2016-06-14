@@ -8,13 +8,20 @@ a = None
 
 database = {}
 lettergrade={0:"F",1:"C-",2:"C",3:"C+",4:"B-",5:"B",6:"B+",7:"A-",8:"A",9:"A+",}
-
+lettergrade_inv = {v: k for k, v in lettergrade.items()}
 
 def initBrowser():
     global a
     if a:
         raise BaseException('Browser has been initialized before!')
-    a=webdriver.Firefox()
+
+    # modify it to the path of your Firefox
+    # remember! too recent version may fail to start
+    import os
+    from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+    log_file = open('log', 'w')
+    binary = FirefoxBinary(os.path.expanduser("~/Desktop/firefox/firefox-bin"), log_file=log_file)
+    a=webdriver.Firefox(firefox_binary=binary)
 
 def shutdownBrowser():
     global a
