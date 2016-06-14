@@ -57,8 +57,8 @@ var add_input = function(type_name) {
 
 var add_input_others = function(div,text_check,type_first,num) {
   /* CHECK IF INVALID: True for valid, false for invalid */
-  var input_id = form.elements[type_first + 'id_' + num].value.trim();
-  var input_class = form.elements[type_first + 'rclass_' + num].value.trim();
+  var cid = form.elements[type_first + 'id_' + num].value.trim();
+  var ccl = form.elements[type_first + 'class_' + num].value.trim();
   var response = search(input_id, input_class);
 
   if (!response.isValid) { // if search fail
@@ -69,7 +69,7 @@ var add_input_others = function(div,text_check,type_first,num) {
     }
     
     div.setAttribute("data-valid",0);
-    text_check.innerHTML = "課號或班次錯誤！";
+    text_check.innerHTML = response.message;
     text_check.setAttribute("style","color: Red;");
     
     return;
@@ -113,15 +113,27 @@ var add_input_others = function(div,text_check,type_first,num) {
   }
 }
 
-var search = function(input_id, input_class) {
-  // Pass "input_id" and "input_class" to back-end
-  
-  // fake response
+var search = function(cid, ccl) {
   var response = {
-    "isValid" : true,
-    "name"    : "開源作業系統",       // can be neglected if isValid = false
-    "class"   : "01",                 // can be neglected if isValid = false
+    "isValid" : false,
+    "message" : "課號或班次錯誤！",
+    "name"    : "",
+    "class"   : ccl,
   }
+  
+  // Pre-check to avoid sending too many requests in short period
+  if (cid.length != 8)
+    return response;
+  
+  // Pass "cid" and "ccl" to back-end
+  qwest.get('/course', {id: cid, 'class': ccl})
+       .then(function(xhr, resp) {
+         response.isValid = true;
+         response.name = resp.data.c_name;
+       })
+       .catch(function(err, xhr, resp) {
+         response.message = resp.msg;
+       });
   
   return response;
 }
@@ -134,34 +146,18 @@ var process = function(input_data) {
     document.getElementById("process").innerHTML += ".";
   }, 1000);
   
-  // Pass "input_data" to back-end
+  /* Pass "input_data" to back-end */
+  // Input data: { "referrence" : [{"name" : string, "class" : string, "grade" : string}, ... ],
+  //               "class"      : [{"name" : string, "class" : string}, ... ] }
+  // Output data: [ {"name" : string, "grade" : string, "credit" : int}, ... ]
+  qwest.post('/query',
+             {ref: input_data.referrence, course: input_data.course},
+             {dataType: 'json'})
+       .then(function(data) {
+         clearInterval(interval);
+         display(data);
+       });
   
-  // Call "display" and clear "interval" when response is received
-  clearInterval(interval);
-  // fake data
-  var data = [{
-    "name"   : "演算法",
-    "grade"  : "B+",
-    "credit" : 3,
-  }, {
-    "name"  : "量子演算法",
-    "grade" : "A-",
-    "credit" : 3,
-  }, {
-    "name": "開源系統軟體",
-    "grade" : "A+",
-    "credit" : 3,
-  }, {
-    "name": "作業研究",
-    "grade" : "F",
-    "credit" : 3,
-  }, {
-    "name": "資訊管理導論",
-    "grade" : "C+",
-    "credit" : 3,
-   }];
-   
-  display(data);
 }
 
 /* Create first input */
