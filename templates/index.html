@@ -4,48 +4,25 @@
   <title>NTU Spicy Course</title>
   <!-- Special thanks to (closed source) NTU Sweety Course -->
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://vote.ntustudents.org/css/pure-min.css">
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
   <link rel="stylesheet" href="/static/style.css">
+</head>
 <body>
   <h1>NTU Spicy Course</h1>
   <div id="input">
     <form class="pure-form pure-g">
-      <div class="pure-u-3-5" id="left">
-        <h2>上學期成績</h2>
-        <div id="refs">
-          <div class="ref pure-g">
-            <label for="rid_0" class="pure-u-1-8">課號：</label>
-            <input name="rid_0" type="text" class="pure-u-1-4"/>
-            <label for="rclass_0" class="pure-u-1-8">班次：</label>
-            <input name="rclass_0" class="pure-u-1-8"/>
-            <label for="rgrade_0" class="pure-u-1-8">成績：</label>
-            <select name="rgrade_0" class="pure-u-1-8">
-              <option value="9">A+</option>
-              <option value="8">A</option>
-              <option value="7">A-</option>
-              <option value="6">B+</option>
-              <option value="5">B</option>
-              <option value="4">B-</option>
-              <option value="3">C+</option>
-              <option value="2">C</option>
-              <option value="1">C-</option>
-              <option value="0">F</option>
-              <option value="0">X</option>
-            </select>
-          </div>
-        </div>
+      <div class="pure-u-1-1" id="instruction">
+        <h3>【使用說明】</h3>
+        輸入完整課號與班次兩碼（無分班者維持空白），將顯示您所查詢的課程與班次是否存在。「上學期欄位」於確認課程存在後，會出現輸入成績的欄位。
+      </div>
+      <div class="pure-u-1-2" id="left">
+      <h2>上學期成績</h2>
+        <div id="refs"></div>
         <button type="button" class="pure-button" id="add-ref">新增課程</button>
       </div>
-      <div class="pure-u-2-5" id="right">
+      <div class="pure-u-1-2" id="right">
         <h2>欲預測之課程</h2>
-        <div id="courses">
-          <div class="course pure-g">
-            <label for="cid_0" class="pure-u-1-6">課號：</label>
-            <input name="cid_0" class="pure-u-1-3"/>
-            <label for="cclass_0" class="pure-u-1-6">班次：</label>
-            <input name="ccclass_0" class="pure-u-1-6">
-          </div>
-        </div>
+        <div id="courses"></div>
         <button type="button" id="add-course" class="pure-button">新增課程</button>
       </div>
       <input type="submit" class="pure-button pure-button-primary" value="查詢"/>
@@ -55,6 +32,8 @@
   <div id="output">
     <h2>預測結果</h2>
     <svg id="canvas"></svg>
+    <div id="result"></div>
+    <button class="pure-button pure-button-primary">重新查詢</button>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
