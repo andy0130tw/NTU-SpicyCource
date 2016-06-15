@@ -95,14 +95,24 @@ def query():
 
     prAvg = sum(prList) / len(prList)
 
-    data = [ {
-        'name': cobj['id'],
+    result = []
+    for creq in data['course']:
+        if 'id' not in creq:
+            return api_error('missing parameters: course[]')
+        cid = creq['id']
 
-        'grade': spicy_core.lettergrade[spicy_core.predictCourseScore(cobj['id'],prAvg)]
-        # 'p_fail': flunkRate(cid, prAvg)
-    } for cobj in data['course'] ]
+        cobj = COURSE_DATA.get(cid, None)
+        if cobj is None:
+            return api_error('course not found')
 
-    return jsonify(data)
+        result.append({
+            'name': cobj['c_name'],
+            'credit': int(cobj['credit']),
+            'grade': spicy_core.lettergrade[spicy_core.predictCourseScore(cid,prAvg)],
+            # 'p_fail': flunkRate(cid, prAvg)
+        })
+
+    return jsonify(result)
 
 if __name__ == '__main__':
     atexit.register(fini)
