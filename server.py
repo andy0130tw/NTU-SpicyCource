@@ -96,10 +96,11 @@ def query():
     prAvg = sum(prList) / len(prList)
 
     data = [ {
-        'c_name': cid,
-        'prediction': spicy_core.lettergrade[spicy_core.predictCourseScore(cid,prAvg)]
+        'name': cobj['id'],
+
+        'grade': spicy_core.lettergrade[spicy_core.predictCourseScore(cobj['id'],prAvg)]
         # 'p_fail': flunkRate(cid, prAvg)
-    } for cid in data['course'] ]
+    } for cobj in data['course'] ]
 
     return jsonify(data)
 
