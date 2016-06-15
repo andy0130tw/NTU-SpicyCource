@@ -4,27 +4,25 @@
   <title>NTU Spicy Course</title>
   <!-- Special thanks to (closed source) NTU Sweety Course -->
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://vote.ntustudents.org/css/pure-min.css">
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <h1>NTU Spicy Course</h1>
   <div id="input">
     <form class="pure-form pure-g">
-      <div class="pure-u-1-1">
+      <div class="pure-u-1-1" id="instruction">
         <h3>【使用說明】</h3>
         輸入完整課號與班次兩碼（無分班者維持空白），將顯示您所查詢的課程與班次是否存在。「上學期欄位」於確認課程存在後，會出現輸入成績的欄位。
       </div>
       <div class="pure-u-1-2" id="left">
-        <h2>上學期成績</h2>
-        <div id="refs">
-        </div>
+      <h2>上學期成績</h2>
+        <div id="refs"></div>
         <button type="button" class="pure-button" id="add-ref">新增課程</button>
       </div>
       <div class="pure-u-1-2" id="right">
         <h2>欲預測之課程</h2>
-        <div id="courses">
-        </div>
+        <div id="courses"></div>
         <button type="button" id="add-course" class="pure-button">新增課程</button>
       </div>
       <input type="submit" class="pure-button pure-button-primary" value="查詢"/>
@@ -34,6 +32,7 @@
   <div id="output">
     <h2>預測結果</h2>
     <svg id="canvas"></svg>
+    <div id="result"></div>
     <button class="pure-button pure-button-primary">重新查詢</button>
   </div>
 

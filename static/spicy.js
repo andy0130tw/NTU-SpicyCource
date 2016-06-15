@@ -52,161 +52,164 @@ var add_input = function(type_name) {
   eval(type_name+"s.appendChild(div)");
 }
 
-var add_input_others = function(div,check,type_first,num)
-{
-  var cid = div.getElementsByTagName("input")[0].value;
-  var ccl = div.getElementsByTagName("input")[1].value;
+var add_input_others = function(div,text_check,type_first,num) {
+  /* CHECK IF INVALID: True for valid, false for invalid */
+  var cid = form.elements[type_first + 'id_' + num].value.trim();
+  var ccl = form.elements[type_first + 'class_' + num].value.trim();
+  var searchPromise = search(input_id, input_class);
 
-  /* Invalid check */
-  var name_invalid = (cid.length != 8);
-  var class_invalid = false;  // (ccl.length != 2);
-
-  if (name_invalid || class_invalid) // if search fail
-  {
-    while (div.getElementsByTagName("select").length > 0)
-    {
+  var searchFailed = function() {
+    while (div.getElementsByTagName("select").length > 0) {
       var end = div.getElementsByTagName("label").length - 1;
       div.removeChild(div.getElementsByTagName("select")[0]);
       div.removeChild(div.getElementsByTagName("label")[end]);
     }
+
     div.setAttribute("data-valid",0);
-    check.innerHTML = "課號或班次錯誤！";
-    check.setAttribute("style","color: #d62728;");
+    text_check.innerHTML = response.message;
+    text_check.setAttribute("style","color: Red;");
+  };
+
+  if (!searchPromise.isValid) {
+    // not a promise!
+    searchFailed();
     return;
   }
-  else // we are going to search course
-  {
-    qwest.get('/course', {id: cid, 'class': ccl})
-      .then(function(xhr, resp) {
-        var course_name = resp.data.c_name;
 
-        div.setAttribute("data-valid",1);
-        check.innerHTML = course_name;
-        check.setAttribute("style","color: #2ca02c");
+  searchPromise
+    .then(function() {
+      var name = response.name;
+      var class_str = response.class;
+      if (class_str.length > 0)
+        class_str = "(" + class_str + "班)";
 
-        if (type_first == "r")
-        {
-          var label_grade = document.createElement("label");
-          label_grade.setAttribute("for",type_first + "grade_" + num);
-          label_grade.setAttribute("class","pure-u-1-6");
-          label_grade.innerHTML = "成績：";
+      div.setAttribute("data-valid",1);
+      text_check.innerHTML = name + class_str;
+      text_check.setAttribute("style","color: Green");
 
-          var grades = ["A+","A","A-","B+","B","B-","C+","C","C-","F or X"];
-          var select_grade = document.createElement("select");
-          select_grade.setAttribute("name",type_first + "grade_" + num);
-          select_grade.setAttribute("class","pure-u-1-3");
-          for (var i = 0; i < grades.length; ++i)
-          {
-            var option = document.createElement("option");
-            if (grades[i].length > 3)
-              option.setAttribute("value",grades[i].split('')[0]);
-            else
-              option.setAttribute("value",grades[i]);
+      if (type_first == "r") {  // for refs
+        var label_grade = document.createElement("label");
+        label_grade.setAttribute("for",type_first + "grade_" + num);
+        label_grade.setAttribute("class","pure-u-1-6");
+        label_grade.innerHTML = "成績：";
 
-            option.innerHTML = grades[i];
-            select_grade.appendChild(option);
-          }
+        var grades = ["A+","A","A-","B+","B","B-","C+","C","C-","F or X"];
+        var select_grade = document.createElement("select");
+        select_grade.setAttribute("name",type_first + "grade_" + num);
+        select_grade.setAttribute("class","pure-u-1-3");
+        for (var i = 0; i < grades.length; ++i) {
+          var option = document.createElement("option");
+          if (grades[i].length > 3)
+            option.setAttribute("value",grades[i].split('')[0]);
+          else
+            option.setAttribute("value",grades[i]);
 
-          div.appendChild(label_grade);
-          div.appendChild(select_grade);
+          option.innerHTML = grades[i];
+          select_grade.appendChild(option);
         }
-      })
-      .catch(function(err, xhr, resp) {
-        div.setAttribute("data-valid",0);
-        check.innerHTML = resp.msg;
-        check.setAttribute("style","color: #d62728;");
-      });
 
-    return;
-  }
+        div.appendChild(label_grade);
+        div.appendChild(select_grade);
+      }
+    })
+    .catch(searchFailed);
 }
 
-// Create first input
-add_input ("ref");
-add_input ("course");
+var search = function(cid, ccl) {
+  var response = {
+    "isValid" : false,
+    "message" : "課號或班次錯誤！",
+    "name"    : "",
+    "class"   : ccl,
+  }
 
-// Bind Events to Buttons
+  // Pre-check to avoid sending too many requests in short period
+  if (cid.length != 8)
+    return response;
+
+  // Pass "cid" and "ccl" to back-end
+  return qwest.get('/course', {id: cid, 'class': ccl})
+       .then(function(xhr, resp) {
+         response.isValid = true;
+         response.name = resp.data.c_name;
+       })
+       .catch(function(err, xhr, resp) {
+         response.message = resp.msg;
+       });
+}
+
+var process = function(input_data) {
+  /* Change view */
+  document.getElementById("input").style.display = 'none';
+  document.getElementById("process").style.display = 'block';
+  var interval = setInterval(function(){
+    document.getElementById("process").innerHTML += ".";
+  }, 1000);
+
+  /* Pass "input_data" to back-end */
+  // Input data: { "referrence" : [{"name" : string, "class" : string, "grade" : string}, ... ],
+  //               "class"      : [{"name" : string, "class" : string}, ... ] }
+  // Output data: [ {"name" : string, "grade" : string, "credit" : int}, ... ]
+  qwest.post('/query',
+             {ref: input_data.referrence, course: input_data.course},
+             {dataType: 'json'})
+       .then(function(data) {
+         clearInterval(interval);
+         display(data);
+       });
+
+}
+
+/* Create first input */
+add_input("ref");
+add_input("course");
+
+/* Bind Events to Buttons */
 add_ref_button.addEventListener("click",function(e){ add_input ("ref"); });
 add_course_button.addEventListener("click",function(e){ add_input ("course"); });
 
+/* Bind Event to Submit */
 var input = {};
-form.addEventListener("submit",
-  function(e) {
-    e.preventDefault();
-    var ref = [];
-    var course = [];
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+  var ref = [];
+  var course = [];
 
-    for (var i = 0; i < document.getElementsByClassName("ref").length; ++i)
-      if (document.getElementsByClassName("ref")[i].getAttribute("data-valid") == 1)
-        ref.push({
-          "id": form.elements['rid_' + i].value.trim(),
-          "class": form.elements['rgrade_' + i].value.trim(),
-          "grade": form.elements['rgrade_' + i].value.trim(),
-        });
-
-    for (var i = 0; i < document.getElementsByClassName("course").length; ++i)
-      if (document.getElementsByClassName("course")[i].getAttribute("data-valid") == 1)
-        course.push({
-          "id": form.elements['cid_' + i].value.trim(),
-          "class": form.elements['cclass_' + i].value.trim(),
-        });
-
-    input["referrence"] = ref;
-    input["course"] = course;
-    if (ref.length == 0)
-    {
-      alert("未輸入上學期成績");
-      return;
-    }
-    if (course.length == 0)
-    {
-      alert("未輸入欲預測之課程");
-      return;
-    }
-
-    document.getElementById("input").style.display = 'none';
-    document.getElementById("process").style.display = 'block';
-
-    var processing = setInterval(function() {
-      document.getElementById("process").innerHTML += ".";
-    }, 1000);
-
-    qwest.post('/query',
-      {ref: ref, course: course},
-      {dataType: 'json'})
-      .then(function(data) {
-        var processed = setTimeout(function() {
-          clearInterval(processing);
-          draw(data);
-        }, 3000);
+  /* Get refs */
+  for (var i = 0; i < document.getElementsByClassName("ref").length; ++i)
+    if (document.getElementsByClassName("ref")[i].getAttribute("data-valid") == 1)
+      ref.push({
+        "id"    : form.elements['rid_' + i].value.trim(),
+        "class" : form.elements['rclass_' + i].value.trim(),
+        "grade" : form.elements['rgrade_' + i].value.trim(),
       });
+
+  /* Get courses */
+  for (var i = 0; i < document.getElementsByClassName("course").length; ++i)
+    if (document.getElementsByClassName("course")[i].getAttribute("data-valid") == 1)
+      course.push({
+        "id"    : form.elements['cid_' + i].value.trim(),
+        "class" : form.elements['cclass_' + i].value.trim(),
+      });
+
+  /* Check if valid  */
+  input["referrence"] = ref;
+  input["course"] = course;
+  if (ref.length == 0) {
+    alert("未輸入上學期成績");
+    return;
   }
+
+  if (course.length == 0) {
+    alert("未輸入欲預測之課程");
+    return;
+  }
+
+  /* Processing in back-end */
+  process(input);
 );
 
-/* PART TWO: VISUALIZATION */
-// fake data
-var data = [{
-  "name"   : "演算法",
-  "grade"  : "B+",
-  "credit" : 3,
-}, {
-  "name"  : "量子演算法",
-  "grade" : "A-",
-  "credit" : 3,
-}, {
-  "name": "開源系統軟體",
-  "grade" : "A+",
-  "credit" : 3,
-}, {
-  "name": "作業研究",
-  "grade" : "F",
-  "credit" : 3,
-}, {
-  "name": "資訊管理導論",
-  "grade" : "C+",
-  "credit" : 3,
-}];
-
+/* PART TWO: DISPLAY */
 var grade2point = {
   "A+" : 4.3,
   "A"  : 4.0,
@@ -233,10 +236,12 @@ var point2grade = {
   0   : "F",
 }
 
-var draw = function(input_data) {
+var display = function(input_data) {
+  /* Change view */
   document.getElementById("process").style.display = 'none';
   document.getElementById("output").style.display = 'block';
 
+  /* Parameters */
   var width = document.getElementById("canvas").offsetWidth;
   var height = document.getElementById("canvas").offsetHeight;
   var margin = {
@@ -245,94 +250,89 @@ var draw = function(input_data) {
     "bottom": 40,
     "left": 40,
   };
-  var text_size = 20;
-  var bar_width = (width - margin.left - margin.right) / (input_data.length + 1) - text_size * 2;
+  var bar_width = (width - margin.left - margin.right) / (input_data.length + 1) - 20 * 2;
   var canvas = d3.select("#canvas");
   var upper = 4.8;
   var lower = -0.5;
 
+  /* Fucntions */
   var xScale = d3.scale.linear()
-    .domain([0.5, input_data.length + 0.5])
-    .range([0, width - margin.left - margin.right]);
+                   .domain([0.5, input_data.length + 0.5])
+                   .range([0, width - margin.left - margin.right]);
 
   var yScale = d3.scale.linear()
-    .domain([upper, lower])
-    .range([0, height - margin.top - margin.bottom]);
+                   .domain([upper, lower])
+                   .range([0, height - margin.top - margin.bottom]);
 
   var xAxis = d3.svg.axis()
-    .scale(xScale)
-    .tickPadding(5)
-    .ticks(input_data.length + 2)
-    .tickFormat(function(d){
-      if ((d > 0) && (d < input_data.length + 1))
-        return input_data[d-1].name;
-      else
-        return " ";
-    });
+                  .scale(xScale)
+                  .tickPadding(5)
+                  .ticks(input_data.length + 2)
+                  .tickFormat(function(d){ return ((d > 0) && (d < input_data.length + 1)) ? input_data[d-1].name : " "; });
 
   var yAxis = d3.svg.axis()
-    .scale(yScale)
-    .orient("left")
-    .tickSize(- width + margin.left + margin.right, 0)
-    .tickPadding(20)
-    .tickValues([0,1.7,2.0,2.3,2.7,3.0,3.3,3.7,4.0,4.3])
-    .tickFormat(function(d){ return point2grade[d]; });
+                  .scale(yScale)
+                  .orient("left")
+                  .tickSize(- width + margin.left + margin.right, 0)
+                  .tickPadding(20)
+                  .tickValues([0,1.7,2.0,2.3,2.7,3.0,3.3,3.7,4.0,4.3])
+                  .tickFormat(function(d){ return point2grade[d]; });
 
+  /* Groups */
   var names = canvas.append("g")
-    .attr("id", "name")
-    .attr("transform", "translate(" + margin.left + ", " + (height - margin.bottom) + ")");
+                      .attr("id", "name")
+                      .attr("transform", "translate(" + margin.left + ", " + (height - margin.bottom) + ")");
 
   var grades = canvas.append("g")
-    .attr("id", "grade")
-    .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+                       .attr("id", "grade")
+                       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
   var plots = canvas.append("g")
-    .attr("id", "plot")
-    .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
-    .selectAll("void").data(input_data).enter();
+                      .attr("id", "plot")
+                      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
+                      .selectAll("void").data(input_data).enter();
 
   /* Grades */
   grades.attr("class","axis").call(yAxis)
-    .selectAll("text").attr("style","text-anchor: middle");
+          .selectAll("text").attr("style","text-anchor: middle");
 
-  /* Course names*/
+  /* Course names */
   names.attr("class","axis").call(xAxis);
 
   /* Bars */
   plots.append("rect")
-    .attr({
-      "width"  : bar_width,
-      "height" : function(d) { return yScale(upper + lower - grade2point[d.grade]); },
-      "x"      : function(d, i) { return xScale(i + 1) - bar_width / 2; },
-      "y"      : function(d) { return yScale(grade2point[d.grade]); },
-      "class"  : function(d) {
-        if (grade2point[d.grade] > 3.5)
-          return "pass-a";
-        else if (grade2point[d.grade] > 2.5)
-          return "pass-b";
-        else if (grade2point[d.grade] > 1.5)
-          return "pass-c";
-        else
-          return "fail";
-      },
-  });
+         .attr({
+           "class"  : function(d) {
+             if (grade2point[d.grade] > 3.5) return "pass-a";
+             else if (grade2point[d.grade] > 2.5) return "pass-b";
+             else if (grade2point[d.grade] > 1.5) return "pass-c";
+             else return "fail";
+           },
+           "width"  : bar_width,
+           "height" : function(d) { return yScale(upper + lower - grade2point[d.grade]); },
+           "x"      : function(d, i) { return xScale(i + 1) - bar_width / 2; },
+           "y"      : function(d) { return yScale(grade2point[d.grade]); },
+         });
 
   plots.append("text").text(function(d){ return d.grade; })
-    .attr({
-      "class" : "grade",
-      "x"     : function(d,i) { return xScale(i + 1)},
-      "y"     : function(d) { return yScale(grade2point[d.grade]) + 25; },
-  });
+         .attr({
+           "class" : "grade",
+           "x"     : function(d,i) { return xScale(i + 1)},
+           "y"     : function(d) { return yScale(grade2point[d.grade]) + 25; },
+         });
 
   /* Calculate GPA */
   var result = document.getElementById("result");
   var points = 0;
   var credits = 0;
+
   for (var i = 0; i < input_data.length; ++i) {
     points += grade2point[input_data[i].grade] * input_data[i].credit;
     credits += input_data[i].credit;
   }
+
   var gpa = Math.round(points / credits * 100) / 100;
   result.innerHTML = "預測學期GPA = " + gpa;
+
   return;
 }
