@@ -251,6 +251,8 @@ var point2grade = {
 }
 
 var display = function(input_data) {
+  console.log(input_data);
+
   /* Change view */
   document.getElementById("process").style.display = 'none';
   document.getElementById("output").style.display = 'block';

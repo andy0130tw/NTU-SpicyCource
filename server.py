@@ -91,7 +91,7 @@ def query():
             return api_error('illegal parameters: ref.*')
 
         cval = spicy_core.lettergrade_inv[ref_data['grade']]
-        prList.append(spicy_core.findPRByHistory(ref_data['id'], cval))
+        prList.append(spicy_core.findPRByHistory(ref_data['id'], ref_data.get('class', ''), cval))
 
     prAvg = sum(prList) / len(prList)
 
@@ -108,7 +108,7 @@ def query():
         result.append({
             'name': cobj['c_name'],
             'credit': int(cobj['credit']),
-            'grade': spicy_core.lettergrade[spicy_core.predictCourseScore(cid,prAvg)],
+            'grade': spicy_core.lettergrade[spicy_core.predictCourseScore(cid, creq.get('class', ''),prAvg)],
             # 'p_fail': flunkRate(cid, prAvg)
         })
 
