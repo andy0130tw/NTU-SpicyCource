@@ -66,7 +66,6 @@ var add_input_others = function(div,text_check,type_first,num, cid, ccl) {
   var searchPromise = search(cid, ccl);
 
   var searchFailed = function(response) {
-    console.log('failure', response);
     while (div.getElementsByTagName("select").length > 0) {
       var end = div.getElementsByTagName("label").length - 1;
       div.removeChild(div.getElementsByTagName("select")[0]);
@@ -167,8 +166,9 @@ var process = function(input_data) {
   qwest.post('/query',
              {ref: input_data.referrence, course: input_data.course},
              {dataType: 'json'})
-       .then(function(data) {
+       .then(function(xhr, data) {
          clearInterval(interval);
+         console.log(data);
          display(data);
        });
 
@@ -251,8 +251,6 @@ var point2grade = {
 }
 
 var display = function(input_data) {
-  console.log(input_data);
-
   /* Change view */
   document.getElementById("process").style.display = 'none';
   document.getElementById("output").style.display = 'block';
