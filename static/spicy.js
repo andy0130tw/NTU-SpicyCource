@@ -14,14 +14,14 @@ var add_input = function(type_name) {
   div.setAttribute("class",type_name + " pure-g");
   div.setAttribute("data-valid",0);
 
-  var label = document.createElement("label");
-  label.setAttribute("for",type_first + "id_" + num)
-  label.setAttribute("class","pure-u-1-6");
-  label.innerHTML = '課號：';
+  var label_id = document.createElement("label");
+  label_id.setAttribute("for",type_first + "id_" + num)
+  label_id.setAttribute("class","pure-u-1-6");
+  label_id.innerHTML = '課號：';
 
-  var input = document.createElement("input");
-  input.setAttribute("name",type_first + "id_" + num)
-  input.setAttribute("class","pure-u-1-3");
+  var input_id = document.createElement("input");
+  input_id.setAttribute("name",type_first + "id_" + num)
+  input_id.setAttribute("class","pure-u-1-3");
 
   var label_class = document.createElement("label");
   label_class.setAttribute("for",type_first + "class_" + num);
@@ -40,25 +40,33 @@ var add_input = function(type_name) {
   var check = document.createElement("div");
   check.setAttribute("class","pure-u-1-3 check");
 
-  div.appendChild(label);
-  div.appendChild(input);
+  div.appendChild(label_id);
+  div.appendChild(input_id);
   div.appendChild(label_class);
   div.appendChild(input_class);
   div.appendChild(label_check);
   div.appendChild(check);
 
-  input.addEventListener("input", function (e) { add_input_others(div,check,type_first,num); });
-  input_class.addEventListener("input", function (e) { add_input_others(div,check,type_first,num); });
+  function inputHandler(input_id, input_class) {
+    return function(e) {
+      add_input_others(div,check,type_first,num, input_id.value, input_class.value);
+    }
+  }
+
+  input_id.addEventListener("input", inputHandler(input_id, input_class));
+  input_class.addEventListener("input", inputHandler(input_id, input_class));
   eval(type_name+"s.appendChild(div)");
 }
 
-var add_input_others = function(div,text_check,type_first,num) {
+var add_input_others = function(div,text_check,type_first,num, cid, ccl) {
   /* CHECK IF INVALID: True for valid, false for invalid */
   var cid = form.elements[type_first + 'id_' + num].value.trim();
   var ccl = form.elements[type_first + 'class_' + num].value.trim();
-  var searchPromise = search(input_id, input_class);
 
-  var searchFailed = function() {
+  var searchPromise = search(cid, ccl);
+
+  var searchFailed = function(response) {
+    console.log('failure', response);
     while (div.getElementsByTagName("select").length > 0) {
       var end = div.getElementsByTagName("label").length - 1;
       div.removeChild(div.getElementsByTagName("select")[0]);
@@ -70,14 +78,19 @@ var add_input_others = function(div,text_check,type_first,num) {
     text_check.setAttribute("style","color: Red;");
   };
 
-  if (!searchPromise.isValid) {
+  if (searchPromise.isValid === false) {
     // not a promise!
-    searchFailed();
+    searchFailed(searchPromise);
     return;
   }
 
   searchPromise
-    .then(function() {
+    .then(function(response) {
+      if (!response.isValid) {
+        searchFailed(response);
+        return;
+      }
+
       var name = response.name;
       var class_str = response.class;
       if (class_str.length > 0)
@@ -111,8 +124,7 @@ var add_input_others = function(div,text_check,type_first,num) {
         div.appendChild(label_grade);
         div.appendChild(select_grade);
       }
-    })
-    .catch(searchFailed);
+    });
 }
 
 var search = function(cid, ccl) {
@@ -129,13 +141,15 @@ var search = function(cid, ccl) {
 
   // Pass "cid" and "ccl" to back-end
   return qwest.get('/course', {id: cid, 'class': ccl})
-       .then(function(xhr, resp) {
-         response.isValid = true;
-         response.name = resp.data.c_name;
-       })
-       .catch(function(err, xhr, resp) {
-         response.message = resp.msg;
-       });
+   .then(function(xhr, resp) {
+     response.isValid = true;
+     response.name = resp.data.c_name;
+     return response;
+   })
+   .catch(function(err, xhr, resp) {
+     response.message = resp.msg;
+     return response;
+   });
 }
 
 var process = function(input_data) {
@@ -207,7 +221,7 @@ form.addEventListener("submit", function(e) {
 
   /* Processing in back-end */
   process(input);
-);
+});
 
 /* PART TWO: DISPLAY */
 var grade2point = {
