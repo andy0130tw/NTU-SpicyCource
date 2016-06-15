@@ -120,4 +120,4 @@ if __name__ == '__main__':
     print('Spawning browser...')
     spicy_core.initBrowser()
     COURSE_DATA = loadCourseData()
-    app.run(debug=True)
+    app.run(port=5566)
