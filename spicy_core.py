@@ -36,9 +36,9 @@ def shutdownBrowser():
         a.quit()
         a = None
 
-def addData(courseid):
+def addData(courseid,classid):
     row=[0,0,0,0,0,0,0,0,0,0]
-    a.get("http://ntusweety.herokuapp.com/history?&id="+courseid[0:3]+"+"+courseid[3:])
+    a.get("http://ntusweety.herokuapp.com/history?&id="+courseid[0:3]+"+"+courseid[3:]+"&cl="+classid)
     content=a.find_elements_by_class_name("item")
     for i in content:
         temp=i.text.split(" ")
