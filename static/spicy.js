@@ -281,8 +281,8 @@ var display = function(input_data) {
   var xAxis = d3.svg.axis()
                   .scale(xScale)
                   .tickPadding(5)
-                  .ticks(input_data.length + 2)
-                  .tickFormat(function(d){ return ((d > 0) && (d < input_data.length + 1)) ? input_data[d-1].name : " "; });
+                  .ticks(input_data.length)
+                  .tickFormat(function(d){ return input_data[d-1].name; });
 
   var yAxis = d3.svg.axis()
                   .scale(yScale)
