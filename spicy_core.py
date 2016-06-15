@@ -57,18 +57,18 @@ def normallize(person):
         PRRange[i]=row[i]/row[9]
     return PRRange
 
-def findPRByHistory(courseid,grade):
+def findPRByHistory(courseid,classid,grade):
     if(courseid not in database):
-        addData(courseid)
+        addData(courseid,classid)
     PRRange = normallize(database[courseid])
     if(grade==0):
         return PRRange[0]/2
     else:
         return (PRRange[grade]+PRRange[grade-1])/2
 
-def predictCourseScore(courseid,PR):
+def predictCourseScore(courseid,classid,PR):
     if(courseid not in database):
-        addData(courseid)
+        addData(courseid,classid)
     PRRange= normallize(database[courseid])
     grade=0
     for i in range(9,-1,-1):
@@ -76,7 +76,7 @@ def predictCourseScore(courseid,PR):
             grade=i
     return grade
 
-def flunkRate(courseid,PR):
+def flunkRate(courseid,classid,PR):
     PRRange = normallize(database[courseid])
     return norm.cdf((PRRange[0]-PR)/numpy.std(PRRange,ddof=1))
 
