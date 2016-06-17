@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 /* PART ONE: INPUT REFs & COURSEs */
 var courses = document.getElementById("courses");
