@@ -3,7 +3,6 @@ import os.path
 
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from scipy.stats import norm
 import numpy
 
 a = None
