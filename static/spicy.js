@@ -1,10 +1,22 @@
 "use strict";
 
+// query single element
+function $(selector)
+{
+    return document.querySelector(selector);
+}
+
+// query all elements
+function $$(selector)
+{
+    return document.querySelectorAll(selector);
+}
+
 /* PART ONE: INPUT REFs & COURSEs */
-var courses = document.getElementById("courses");
-var refs = document.getElementById("refs");
-var add_ref_button = document.getElementById("add-ref");
-var add_course_button = document.getElementById("add-course");
+var courses = $("#courses");
+var refs = $("#refs");
+var add_ref_button = $("#add-ref");
+var add_course_button = $("#add-course");
 var form = document.getElementsByTagName("form")[0];
 
 var add_input = function(type_name) {
@@ -153,10 +165,10 @@ var search = function(cid, ccl) {
 
 var process = function(input_data) {
   /* Change view */
-  document.getElementById("input").style.display = 'none';
-  document.getElementById("process").style.display = 'block';
+  $("#input").style.display = 'none';
+  $("#process").style.display = 'block';
   var interval = setInterval(function(){
-    document.getElementById("process").innerHTML += ".";
+    $("#process").innerHTML += ".";
   }, 1000);
 
   /* Pass "input_data" to back-end */
@@ -190,8 +202,8 @@ form.addEventListener("submit", function(e) {
   var course = [];
 
   /* Get refs */
-  for (var i = 0; i < document.getElementsByClassName("ref").length; ++i)
-    if (document.getElementsByClassName("ref")[i].getAttribute("data-valid") == 1)
+  for (var i = 0; i < $$(".ref").length; ++i)
+    if ($$(".ref")[i].getAttribute("data-valid") == 1)
       ref.push({
         "id"    : form.elements['rid_' + i].value.trim(),
         "class" : form.elements['rclass_' + i].value.trim(),
@@ -199,8 +211,8 @@ form.addEventListener("submit", function(e) {
       });
 
   /* Get courses */
-  for (var i = 0; i < document.getElementsByClassName("course").length; ++i)
-    if (document.getElementsByClassName("course")[i].getAttribute("data-valid") == 1)
+  for (var i = 0; i < $$(".course").length; ++i)
+    if ($$(".course")[i].getAttribute("data-valid") == 1)
       course.push({
         "id"    : form.elements['cid_' + i].value.trim(),
         "class" : form.elements['cclass_' + i].value.trim(),
@@ -252,12 +264,12 @@ var point2grade = {
 
 var display = function(input_data) {
   /* Change view */
-  document.getElementById("process").style.display = 'none';
-  document.getElementById("output").style.display = 'block';
+  $("#process").style.display = 'none';
+  $("#output").style.display = 'block';
 
   /* Parameters */
-  var width = document.getElementById("canvas_container").offsetWidth;
-  var height = document.getElementById("canvas_container").offsetHeight;
+  var width = $("#canvas_container").offsetWidth;
+  var height = $("#canvas_container").offsetHeight;
   var margin = {
     "top": 20,
     "right": 10,
@@ -336,7 +348,7 @@ var display = function(input_data) {
          });
 
   /* Calculate GPA */
-  var result = document.getElementById("result");
+  var result = $("#result");
   var points = 0;
   var credits = 0;
 
