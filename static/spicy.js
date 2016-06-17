@@ -80,7 +80,10 @@ var add_input = function(type_name) {
 
   input_id.addEventListener("input", inputHandler(input_id, input_class));
   input_class.addEventListener("input", inputHandler(input_id, input_class));
-  eval(type_name+"s.appendChild(div)");
+  {
+    "ref": refs,
+    "course": courses
+  }[type_name].appendChild(div);
 }
 
 var add_input_others = function(div,text_check,type_first,num, cid, ccl) {
