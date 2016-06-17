@@ -17,7 +17,7 @@ var courses = $("#courses");
 var refs = $("#refs");
 var add_ref_button = $("#add-ref");
 var add_course_button = $("#add-course");
-var form = document.getElementsByTagName("form")[0];
+var form = $("#form-input");
 
 var add_input = function(type_name) {
   var type_first = type_name.split('')[0];
