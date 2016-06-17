@@ -12,6 +12,18 @@ function $$(selector)
     return document.querySelectorAll(selector);
 }
 
+function create_eleemnt(tag_name, attributes, inner_html)
+{
+  attributes = attributes || {};
+  inner_html = inner_html || "";
+
+  var element = document.createElement(tag_name);
+  for(var attr_name in attributes) {
+    element.setAttribute(attr_name, attributes[attr_name]);
+  }
+  return element;
+}
+
 /* PART ONE: INPUT REFs & COURSEs */
 var courses = $("#courses");
 var refs = $("#refs");
@@ -22,42 +34,43 @@ var form = $("#form-input");
 var add_input = function(type_name) {
   var type_first = type_name.split('')[0];
   var num = document.getElementsByClassName(type_name).length;
-  var div = document.createElement("div");
-  div.setAttribute("class",type_name + " pure-g");
-  div.setAttribute("data-valid",0);
+  var div = create_eleemnt("div", {
+    "class": type_name + " pure-g",
+    "data-valid": 0
+  });
 
-  var label_id = document.createElement("label");
-  label_id.setAttribute("for",type_first + "id_" + num)
-  label_id.setAttribute("class","pure-u-1-6");
-  label_id.innerHTML = '課號：';
+  var label_id = create_eleemnt("label", {
+    "for": type_first + "id_" + num,
+    "class", "pure-u-1-6"
+  },  "課號：");
 
-  var input_id = document.createElement("input");
-  input_id.setAttribute("name",type_first + "id_" + num)
-  input_id.setAttribute("class","pure-u-1-3");
+  var input_id = create_eleemnt("input", {
+    "name": ,type_first + "id_" + num,
+    "class": "pure-u-1-3"
+  });
 
-  var label_class = document.createElement("label");
-  label_class.setAttribute("for",type_first + "class_" + num);
-  label_class.setAttribute("class","pure-u-1-6");
-  label_class.innerHTML = "班次：";
+  var label_class = create_eleemnt("label", {
+    "for": type_first + "class_" + num,
+    "class": "pure-u-1-6"
+  },  "班次：");
 
-  var input_class = document.createElement("input");
-  input_class.setAttribute("name",type_first + "class_" + num);
-  input_class.setAttribute("class","pure-u-1-3");
+  var input_class = document.create_eleemnt("input", {
+    "name": type_first + "class_" + num,
+    "class": "pure-u-1-3"
+  })
 
-  var label_check = document.createElement("label");
-  label_check.setAttribute("for",type_first + "class_" + num);
-  label_check.setAttribute("class","pure-u-1-6");
-  label_check.innerHTML = "課名：";
+  var label_check = create_eleemnt("label", {
+    "for": type_first + "class_" + num,
+    "class": "pure-u-1-6"
+  },  "課名：");
 
-  var check = document.createElement("div");
-  check.setAttribute("class","pure-u-1-3 check");
+  var check = create_eleemnt("div", {
+    "class": "pure-u-1-3 check"
+  });
 
-  div.appendChild(label_id);
-  div.appendChild(input_id);
-  div.appendChild(label_class);
-  div.appendChild(input_class);
-  div.appendChild(label_check);
-  div.appendChild(check);
+  [
+    label_id, input_id, label_class, input_class, label_check, check
+  ].forEach(function(e) { div.appendChild(e); });
 
   function inputHandler(input_id, input_class) {
     return function(e) {
