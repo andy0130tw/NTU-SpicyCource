@@ -256,8 +256,8 @@ var display = function(input_data) {
   document.getElementById("output").style.display = 'block';
 
   /* Parameters */
-  var width = document.getElementById("canvas").offsetWidth;
-  var height = document.getElementById("canvas").offsetHeight;
+  var width = document.getElementById("canvas_container").offsetWidth;
+  var height = document.getElementById("canvas_container").offsetHeight;
   var margin = {
     "top": 20,
     "right": 10,
