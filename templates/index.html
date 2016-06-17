@@ -10,7 +10,7 @@
 <body>
   <h1>NTU Spicy Course</h1>
   <div id="input">
-    <form class="pure-form pure-g">
+    <form class="pure-form pure-g" id="form-input">
       <div class="pure-u-1-1" id="instruction">
         <h3>【使用說明】</h3>
         輸入完整課號與班次兩碼（無分班者維持空白），將顯示您所查詢的課程與班次是否存在。「上學期欄位」於確認課程存在後，會出現輸入成績的欄位。
@@ -31,7 +31,9 @@
   <div id="process">Processing...</div>
   <div id="output">
     <h2>預測結果</h2>
-    <svg id="canvas"></svg>
+    <div id="canvas_container">
+      <svg id="canvas"></svg>
+    </div>
     <div id="result"></div>
     <button class="pure-button pure-button-primary">重新查詢</button>
   </div>

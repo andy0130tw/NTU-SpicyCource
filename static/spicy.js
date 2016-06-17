@@ -1,51 +1,76 @@
-"use strict"
+"use strict";
+
+// query single element
+function $(selector)
+{
+    return document.querySelector(selector);
+}
+
+// query all elements
+function $$(selector)
+{
+    return document.querySelectorAll(selector);
+}
+
+function create_eleemnt(tag_name, attributes, inner_html)
+{
+  attributes = attributes || {};
+  inner_html = inner_html || "";
+
+  var element = document.createElement(tag_name);
+  for(var attr_name in attributes) {
+    element.setAttribute(attr_name, attributes[attr_name]);
+  }
+  return element;
+}
 
 /* PART ONE: INPUT REFs & COURSEs */
-var courses = document.getElementById("courses");
-var refs = document.getElementById("refs");
-var add_ref_button = document.getElementById("add-ref");
-var add_course_button = document.getElementById("add-course");
-var form = document.getElementsByTagName("form")[0];
+var courses = $("#courses");
+var refs = $("#refs");
+var add_ref_button = $("#add-ref");
+var add_course_button = $("#add-course");
+var form = $("#form-input");
 
 var add_input = function(type_name) {
   var type_first = type_name.split('')[0];
   var num = document.getElementsByClassName(type_name).length;
-  var div = document.createElement("div");
-  div.setAttribute("class",type_name + " pure-g");
-  div.setAttribute("data-valid",0);
+  var div = create_eleemnt("div", {
+    "class": type_name + " pure-g",
+    "data-valid": 0
+  });
 
-  var label_id = document.createElement("label");
-  label_id.setAttribute("for",type_first + "id_" + num)
-  label_id.setAttribute("class","pure-u-1-6");
-  label_id.innerHTML = '課號：';
+  var label_id = create_eleemnt("label", {
+    "for": type_first + "id_" + num,
+    "class", "pure-u-1-6"
+  },  "課號：");
 
-  var input_id = document.createElement("input");
-  input_id.setAttribute("name",type_first + "id_" + num)
-  input_id.setAttribute("class","pure-u-1-3");
+  var input_id = create_eleemnt("input", {
+    "name": ,type_first + "id_" + num,
+    "class": "pure-u-1-3"
+  });
 
-  var label_class = document.createElement("label");
-  label_class.setAttribute("for",type_first + "class_" + num);
-  label_class.setAttribute("class","pure-u-1-6");
-  label_class.innerHTML = "班次：";
+  var label_class = create_eleemnt("label", {
+    "for": type_first + "class_" + num,
+    "class": "pure-u-1-6"
+  },  "班次：");
 
-  var input_class = document.createElement("input");
-  input_class.setAttribute("name",type_first + "class_" + num);
-  input_class.setAttribute("class","pure-u-1-3");
+  var input_class = document.create_eleemnt("input", {
+    "name": type_first + "class_" + num,
+    "class": "pure-u-1-3"
+  })
 
-  var label_check = document.createElement("label");
-  label_check.setAttribute("for",type_first + "class_" + num);
-  label_check.setAttribute("class","pure-u-1-6");
-  label_check.innerHTML = "課名：";
+  var label_check = create_eleemnt("label", {
+    "for": type_first + "class_" + num,
+    "class": "pure-u-1-6"
+  },  "課名：");
 
-  var check = document.createElement("div");
-  check.setAttribute("class","pure-u-1-3 check");
+  var check = create_eleemnt("div", {
+    "class": "pure-u-1-3 check"
+  });
 
-  div.appendChild(label_id);
-  div.appendChild(input_id);
-  div.appendChild(label_class);
-  div.appendChild(input_class);
-  div.appendChild(label_check);
-  div.appendChild(check);
+  [
+    label_id, input_id, label_class, input_class, label_check, check
+  ].forEach(function(e) { div.appendChild(e); });
 
   function inputHandler(input_id, input_class) {
     return function(e) {
@@ -55,7 +80,10 @@ var add_input = function(type_name) {
 
   input_id.addEventListener("input", inputHandler(input_id, input_class));
   input_class.addEventListener("input", inputHandler(input_id, input_class));
-  eval(type_name+"s.appendChild(div)");
+  {
+    "ref": refs,
+    "course": courses
+  }[type_name].appendChild(div);
 }
 
 var add_input_others = function(div,text_check,type_first,num, cid, ccl) {
@@ -153,10 +181,10 @@ var search = function(cid, ccl) {
 
 var process = function(input_data) {
   /* Change view */
-  document.getElementById("input").style.display = 'none';
-  document.getElementById("process").style.display = 'block';
+  $("#input").style.display = 'none';
+  $("#process").style.display = 'block';
   var interval = setInterval(function(){
-    document.getElementById("process").innerHTML += ".";
+    $("#process").innerHTML += ".";
   }, 1000);
 
   /* Pass "input_data" to back-end */
@@ -190,8 +218,8 @@ form.addEventListener("submit", function(e) {
   var course = [];
 
   /* Get refs */
-  for (var i = 0; i < document.getElementsByClassName("ref").length; ++i)
-    if (document.getElementsByClassName("ref")[i].getAttribute("data-valid") == 1)
+  for (var i = 0; i < $$(".ref").length; ++i)
+    if ($$(".ref")[i].getAttribute("data-valid") == 1)
       ref.push({
         "id"    : form.elements['rid_' + i].value.trim(),
         "class" : form.elements['rclass_' + i].value.trim(),
@@ -199,8 +227,8 @@ form.addEventListener("submit", function(e) {
       });
 
   /* Get courses */
-  for (var i = 0; i < document.getElementsByClassName("course").length; ++i)
-    if (document.getElementsByClassName("course")[i].getAttribute("data-valid") == 1)
+  for (var i = 0; i < $$(".course").length; ++i)
+    if ($$(".course")[i].getAttribute("data-valid") == 1)
       course.push({
         "id"    : form.elements['cid_' + i].value.trim(),
         "class" : form.elements['cclass_' + i].value.trim(),
@@ -252,12 +280,12 @@ var point2grade = {
 
 var display = function(input_data) {
   /* Change view */
-  document.getElementById("process").style.display = 'none';
-  document.getElementById("output").style.display = 'block';
+  $("#process").style.display = 'none';
+  $("#output").style.display = 'block';
 
   /* Parameters */
-  var width = document.getElementById("canvas").offsetWidth;
-  var height = document.getElementById("canvas").offsetHeight;
+  var width = $("#canvas_container").offsetWidth;
+  var height = $("#canvas_container").offsetHeight;
   var margin = {
     "top": 20,
     "right": 10,
@@ -336,7 +364,7 @@ var display = function(input_data) {
          });
 
   /* Calculate GPA */
-  var result = document.getElementById("result");
+  var result = $("#result");
   var points = 0;
   var credits = 0;
 
