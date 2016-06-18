@@ -21,6 +21,7 @@ function create_eleemnt(tag_name, attributes, inner_html)
   for(var attr_name in attributes) {
     element.setAttribute(attr_name, attributes[attr_name]);
   }
+  element.innerHTML = inner_html;
   return element;
 }
 
@@ -41,11 +42,11 @@ var add_input = function(type_name) {
 
   var label_id = create_eleemnt("label", {
     "for": type_first + "id_" + num,
-    "class", "pure-u-1-6"
+    "class": "pure-u-1-6"
   },  "課號：");
 
   var input_id = create_eleemnt("input", {
-    "name": ,type_first + "id_" + num,
+    "name": type_first + "id_" + num,
     "class": "pure-u-1-3"
   });
 
@@ -54,7 +55,7 @@ var add_input = function(type_name) {
     "class": "pure-u-1-6"
   },  "班次：");
 
-  var input_class = document.create_eleemnt("input", {
+  var input_class = create_eleemnt("input", {
     "name": type_first + "class_" + num,
     "class": "pure-u-1-3"
   })
@@ -80,10 +81,10 @@ var add_input = function(type_name) {
 
   input_id.addEventListener("input", inputHandler(input_id, input_class));
   input_class.addEventListener("input", inputHandler(input_id, input_class));
-  {
+  ({
     "ref": refs,
     "course": courses
-  }[type_name].appendChild(div);
+  })[type_name].appendChild(div);
 }
 
 var add_input_others = function(div,text_check,type_first,num, cid, ccl) {
