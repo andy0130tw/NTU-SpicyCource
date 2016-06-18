@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import numpy
 
-a = None
+browser = None
 
 # modify it to the path of your Firefox
 # remember! too recent version may fail to start
@@ -18,27 +18,34 @@ lettergrade={0:"F",1:"C-",2:"C",3:"C+",4:"B-",5:"B",6:"B+",7:"A-",8:"A",9:"A+",}
 lettergrade_inv = {v: k for k, v in lettergrade.items()}
 
 def initBrowser():
-    global a
-    if a:
+    global browser
+    if browser:
         raise BaseException('Browser has been initialized before!')
+
+    try:
+        browser = webdriver.PhantomJS()
+        return
+    except:
+        pass
+
 
     if os.path.isfile(FIREFOX_PATH):
         print('Using custom path:', FIREFOX_PATH)
-        a=webdriver.Firefox(firefox_binary=FirefoxBinary(FIREFOX_PATH))
+        browser = webdriver.Firefox(firefox_binary=FirefoxBinary(FIREFOX_PATH))
     else:
         # use default
-        a=webdriver.Firefox()
+        browser = webdriver.Firefox()
 
 def shutdownBrowser():
-    global a
-    if a:
-        a.quit()
-        a = None
+    global browser
+    if browser:
+        browser.quit()
+        browser = None
 
 def addData(courseid,classid):
     row=[0,0,0,0,0,0,0,0,0,0]
-    a.get("http://ntusweety.herokuapp.com/history?&id="+courseid[0:3]+"+"+courseid[3:]+"&cl="+classid)
-    content=a.find_elements_by_class_name("item")
+    browser.get("http://ntusweety.herokuapp.com/history?&id="+courseid[0:3]+"+"+courseid[3:]+"&cl="+classid)
+    content=browser.find_elements_by_class_name("item")
     for i in content:
         temp=i.text.split(" ")
         for j in range(len(temp)-10,len(temp)):
