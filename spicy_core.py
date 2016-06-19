@@ -22,19 +22,16 @@ def initBrowser():
     if browser:
         raise BaseException('Browser has been initialized before!')
 
-    try:
-        browser = webdriver.PhantomJS()
-        return
-    except:
-        pass
-
-
     if os.path.isfile(FIREFOX_PATH):
-        print('Using custom path:', FIREFOX_PATH)
+        print('Using Firefox instead of PhantomJS:', FIREFOX_PATH)
         browser = webdriver.Firefox(firefox_binary=FirefoxBinary(FIREFOX_PATH))
     else:
-        # use default
-        browser = webdriver.Firefox()
+        try:
+            browser = webdriver.PhantomJS()
+        except:
+            # phantomjs is not available; use default
+            print('Falling back to system Firefox:', FIREFOX_PATH)
+            browser = webdriver.Firefox()
 
 def shutdownBrowser():
     global browser
