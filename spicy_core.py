@@ -30,7 +30,7 @@ def initBrowser():
             browser = webdriver.PhantomJS()
         except:
             # phantomjs is not available; use default
-            print('Falling back to system Firefox:', FIREFOX_PATH)
+            print('Falling back to system Firefox')
             browser = webdriver.Firefox()
 
 def shutdownBrowser():
