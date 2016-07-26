@@ -14,5 +14,5 @@ Run `python3 server.py`, the server will start listening the request after a bro
 # Contributors
   * [Ping Chen](https://github.com/artistic709), the holly PM with core algorithms in mind.
   * [Andy Pan](https://github.com/andy0130tw) for server-side code, fixing JavaScript occasionally.
-  * [Katrina Chen](https://github.com/katrina76) for frond end and visualization.
+  * [Katrina Zhan](https://github.com/katrina76) for frond end and visualization.
   * [Inndy Lin](https://github.com/Inndy) as a code reviewer.
